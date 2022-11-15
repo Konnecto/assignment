@@ -7,8 +7,9 @@ import {
   FilterQuery,
   UpdateWriteOpResult,
   Collection,
+  FindOneOptions,
 } from "mongodb";
-import { IClientConnectionMongoConfig } from "../types/mongo-interfaces";
+import { IClientConnectionMongoConfig, IPaginatedData } from "../types/mongo-interfaces";
 
 export const TYPE = "mongo";
 export default class MongoConnector {
@@ -37,7 +38,7 @@ export default class MongoConnector {
     });
   }
 
-  async getDbAndExecuteFunc(
+  private async getDbAndExecuteFunc(
     func: (db: Db, options: { defaultMaxTimeMS: number }) => Promise<any>,
     options?
   ): Promise<any> {
@@ -84,6 +85,40 @@ export default class MongoConnector {
       `MongoConnector. Exceed max attempts. Max attempts: ${maxAttempts}, operation: ${options.callerFuncName}`
     );
     throw lastError;
+  }
+
+  public aggregate(
+    collectionName: string,
+    pipeline: object[],
+  ): Promise<any[]> {
+    return this.getDbAndExecuteFunc((dbRef) =>
+      dbRef.collection(collectionName).aggregate(pipeline).toArray(),
+    );
+  }
+
+  public count(
+    collectionName: string,
+    query: FilterQuery<any>,
+  ): Promise<number> {
+    return this.getDbAndExecuteFunc((dbRef) => 
+      dbRef.collection(collectionName).countDocuments(query)
+    );
+  }
+
+  public getAll<T>(
+    collectionName: string,
+    queryOptions: FindOneOptions<{}>,
+  ): Promise<IPaginatedData<T>> {
+    return this.getDbAndExecuteFunc(async (dbRef) => {
+      const cursor = dbRef.collection(collectionName).find({}, queryOptions);
+
+      const [data, totalCount] = await Promise.all([
+        cursor.toArray(),
+        cursor.count(),
+      ]);
+
+      return { data, totalCount };
+    });
   }
 
   async getById(

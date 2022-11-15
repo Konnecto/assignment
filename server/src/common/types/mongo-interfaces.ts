@@ -28,3 +28,8 @@ export interface IRepositories extends IDBRepos {
 export interface IDbWrapper {
   repositories: IRepositories;
 }
+
+export interface IPaginatedData<T>  {
+  data: T[];
+  totalCount: number;
+}

@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "build": "tsc",
-    "start": "npm run compile & node dist/server.js",
+    "start": "npm run build & node dist/server.js",
     "start_local": "ts-node-dev -r dotenv/config src/server.ts",
     "prettier:check": "prettier --check \"src/**/*.{ts,html,js,json}\"",
     "prettier:fix": "prettier --write \"src/**/*.{ts,html,js,json}\""

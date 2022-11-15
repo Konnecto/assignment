@@ -8,6 +8,8 @@ import { Observable } from "rxjs";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { Router } from "@angular/router";
 
+const SEGMENTS_LIMIT = 15;
+
 @Component({
   selector: "segment-list",
   templateUrl: "./segment-list.component.html",
@@ -72,6 +74,8 @@ export class SegmentListComponent implements OnInit {
     totalCount: number;
   }> {
     let params = new HttpParams()
+
+    params = params.set('limit', SEGMENTS_LIMIT.toString());
 
     if (this.searchValue?.length) {
       params = params.set("q", this.searchValue);
