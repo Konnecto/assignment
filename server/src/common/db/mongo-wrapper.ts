@@ -98,10 +98,10 @@ export default class MongoConnector {
 
   public count(
     collectionName: string,
-    query: FilterQuery<any>,
+    query: FilterQuery<{}>,
   ): Promise<number> {
     return this.getDbAndExecuteFunc((dbRef) => 
-      dbRef.collection(collectionName).countDocuments(query)
+      dbRef.collection(collectionName).countDocuments(query),
     );
   }
 
