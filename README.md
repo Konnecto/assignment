@@ -14,8 +14,8 @@ Run NPM start, the default client port is 4208
 
 ## Assignment Overview
 
-Please checkout from main and open a new branch
-"assignment/myinitials"
+Please checkout from main branch, To submit the assignment either create a private repository and share it with us,
+Or send us the entire project in a zip.
 
 * disclaimer
 There is no need to go explore random parts of the project, assume the code there is complete and working as intended.
@@ -40,8 +40,6 @@ The route receives a call from the "client/src/app/pages/segment/segment-list/se
 returns a list of "ISegmentGenderData" as a response;
 Full implementation of the route is expected matching the client side signature.
 
-* Task 3
-Add pagination to segment list page.
 
 If you wish to do additional changes but feel it's too time consuming / outside the scope of the task feel free
 to add a TODO comment with a short description of what you'd like to do there.
