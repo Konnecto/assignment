@@ -11,6 +11,7 @@ the default server port is 8000.
 
 ## Running the client
 Run NPM start, the default client port is 4208
+To log-in just input ANY valid email (aaa@aaa.aa) and ANY password (abc)
 
 ## Assignment Overview
 
