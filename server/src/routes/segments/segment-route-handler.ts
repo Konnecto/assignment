@@ -20,7 +20,7 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
 
     // the "users" collection
     // const userCollection: Collection = await (await getDbWrapper()).getCollection('users');
-    // has a "many to one" relationship to the segment collection, check IUser interface or query the raw data.
+    // has a "many to many" relationship to the segment collection, check IUser interface or query the raw data.
     // res.json({ success: true, data: ISegmentMetaData[], totalCount });
 
     res.json({ success: true });
@@ -91,7 +91,7 @@ export async function getSegmentGenderData(
 
     // the "users" collection
     // const userCollection: Collection = await (await getDbWrapper()).getCollection('users');
-    // has a "many to one" relationship to the segment collection, check IUser interface or query the raw data.
+    // has a "many to many" relationship to the segment collection, check IUser interface or query the raw data.
     // res.json({ success: true, data: ISegmentGenderData[] });
 
     res.json({ success: true });
