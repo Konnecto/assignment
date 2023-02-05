@@ -14,6 +14,17 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
       await getDbWrapper()
     ).getCollection("segments");
 
+    const dummyDataForSegement = await segmentCollection.find().map((segmentDocument):ISegmentMetaData => {
+      return {
+        _id: segmentDocument.id,
+        name: segmentDocument.name,
+        userCount: 7,
+        avgIncome: 50,
+        topGender: 1,
+
+      }    
+    }).toArray();
+
     // todo TASK 1
     // write this function to return { data: ISegmentMetaData[]; totalCount: number };
     // where data is an array of ISegmentMetaData, and totalCount is the # of total segments
@@ -23,7 +34,7 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
     // has a "many to many" relationship to the segment collection, check IUser interface or query the raw data.
     // res.json({ success: true, data: ISegmentMetaData[], totalCount });
 
-    res.json({ success: true });
+    res.json({ success: true, data: dummyDataForSegement, totalCount: dummyDataForSegement.length });
   } catch (error) {
     handleResponseError(
       `Get Segment List Error: ${error.message}`,
