@@ -26,11 +26,16 @@ const _getSingleSegmentMetadataFromDB = async (
           },
         },
         {
+          $sort: {
+            userCount: -1,
+          },
+        },
+        {
           $group: {
             _id: null,
             userCount: { $sum: '$userCount' },
             avgIncome: { $avg: '$avgIncome' },
-            topGender: { $max: '$_id' },
+            topGender: { $first: '$_id' },
           },
         },
         {
@@ -142,12 +147,13 @@ const _getSegmentGenderDataFromDB = async (
     0
   );
 
-  const groupSegmentGenderDataArray: ISegmentGenderData[] = partialgroupGenderArray.map((groupGenderItem) => {
-    return {
-      ...groupGenderItem,
-      userPercentage: (groupGenderItem.userCount / totalUserCount) * 100,
-    };
-  });
+  const groupSegmentGenderDataArray: ISegmentGenderData[] =
+    partialgroupGenderArray.map((groupGenderItem) => {
+      return {
+        ...groupGenderItem,
+        userPercentage: (groupGenderItem.userCount / totalUserCount) * 100,
+      };
+    });
 
   return groupSegmentGenderDataArray;
 };
@@ -163,7 +169,10 @@ export async function getSegmentGenderData(
       await getDbWrapper()
     ).getCollection('users');
 
-    const groupSegmentGenderDataArray = await _getSegmentGenderDataFromDB(segmentId,userCollection);
+    const groupSegmentGenderDataArray = await _getSegmentGenderDataFromDB(
+      segmentId,
+      userCollection
+    );
 
     res.json({ success: true, data: groupSegmentGenderDataArray });
   } catch (error) {
