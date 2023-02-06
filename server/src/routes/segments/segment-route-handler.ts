@@ -119,25 +119,53 @@ export async function updateSegmentById(
   }
 }
 
+const _getSegmentGenderDataFromDB = async (
+  segmentId: string,
+  userCollection: Collection
+): Promise<ISegmentGenderData[]> => {
+  const partialgroupGenderArray = await userCollection
+    .aggregate([
+      {
+        $match: { segment_ids: new ObjectId(segmentId) },
+      },
+      {
+        $group: {
+          _id: '$gender',
+          userCount: { $sum: 1 },
+        },
+      },
+    ])
+    .toArray();
+
+  const totalUserCount = partialgroupGenderArray.reduce(
+    (accumulator, groupGenderItem) => accumulator + groupGenderItem.userCount,
+    0
+  );
+
+  const groupSegmentGenderDataArray: ISegmentGenderData[] = partialgroupGenderArray.map((groupGenderItem) => {
+    return {
+      ...groupGenderItem,
+      userPercentage: (groupGenderItem.userCount / totalUserCount) * 100,
+    };
+  });
+
+  return groupSegmentGenderDataArray;
+};
+
 export async function getSegmentGenderData(
   req: Request,
   res: Response
 ): Promise<void> {
   try {
-    const segmentCollection: Collection = await (
+    const segmentId = req.params.id;
+
+    const userCollection: Collection = await (
       await getDbWrapper()
-    ).getCollection('segments');
+    ).getCollection('users');
 
-    // todo TASK 2
-    // write this function to return
-    // data = [ { _id: "Male", userCount: x1, userPercentage: y1 }, { _id: "Female", userCount: x2, userPercentage: y2} ]
+    const groupSegmentGenderDataArray = await _getSegmentGenderDataFromDB(segmentId,userCollection);
 
-    // the "users" collection
-    // const userCollection: Collection = await (await getDbWrapper()).getCollection('users');
-    // has a "many to many" relationship to the segment collection, check IUser interface or query the raw data.
-    // res.json({ success: true, data: ISegmentGenderData[] });
-
-    res.json({ success: true });
+    res.json({ success: true, data: groupSegmentGenderDataArray });
   } catch (error) {
     handleResponseError(
       `Segment gender data error: ${error.message}`,
