@@ -56,8 +56,14 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
       (await getDbWrapper()).getCollection('users'),
     ]);
 
-    // I purposely added a limit to the segmentsArray in order to see a result in a normal timeframe,
-    // otherwise the queries will take unreasonable amount of time.
+// I'm using a loop that queries the DB every single time for a different segment 
+// instead of using one big query that does both operations.
+// The reason for that is in the performance results - I tested both options,
+// and I saw that using a loop + single query is faster than one big query.
+//
+// I've added the big query to the bottom of the file in case you to look 
+// (I obviosly wouldn't add the comments to a produciton code).
+
     const segmentsArray = await segmentCollection.find().limit(5).toArray();
 
     const segmentsMetadataArray = await Promise.all(
@@ -183,3 +189,56 @@ export async function getSegmentGenderData(
     );
   }
 }
+
+
+    //                       BIG QUERY
+    // GETTING segmentsMetadataArray FROM DB IN A SINGLE INTERACTION
+    // ############################################
+    // const segmentsMetadataArray = await segmentCollection.aggregate([
+    //   { $limit: 1 },
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       let: { segmentId: "$_id" },
+    //       pipeline: [
+    //         { $match: { $expr: { $in: ["$$segmentId", "$segment_ids" ] } } },
+    //         {
+    //           $group: {
+    //             _id: "$gender",
+    //             userCount: { $sum: 1 },
+    //             avgIncome: { $avg: "$income_level" }
+    //           }
+    //         },
+    //         {
+    //           $sort: { userCount: -1 }
+    //         },
+    //         {
+    //           $group: {
+    //             _id: null,
+    //             userCount: { $sum: "$userCount" },
+    //             avgIncome: { $avg: "$avgIncome" },
+    //             topGender: { $first: "$_id" }
+    //           }
+    //         }
+    //       ],
+    //       as: "segmentResults"
+    //     }
+    //   },
+    //   {
+    //     $unwind: '$segmentResults',
+    //   },
+    //   {
+    //     $replaceRoot: {
+    //       newRoot: {
+    //         $mergeObjects: [
+    //           '$segmentResults',
+    //           {
+    //             name: '$name',
+    //             _id: '$_id',
+    //           },
+    //         ],
+    //       },
+    //     },
+    //   },
+    // ]).toArray();
+    // ############################################
