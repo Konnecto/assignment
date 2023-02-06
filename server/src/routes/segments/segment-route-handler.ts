@@ -8,7 +8,7 @@ import {
 } from '../../common/types/db-models/segment';
 import { getDbWrapper } from '../../common/db/mongo-wrapper';
 
-const _getSingleSegmentMetadata = async (
+const _getSingleSegmentMetadataFromDB = async (
   segmentItem: ISegment,
   userCollection: Collection
 ): Promise<ISegmentMetaData> => {
@@ -58,7 +58,7 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
     const segmentsMetadataArray = await Promise.all(
       segmentsArray.map(
         async (segmentItem) =>
-          await _getSingleSegmentMetadata(segmentItem, userCollection)
+          await _getSingleSegmentMetadataFromDB(segmentItem, userCollection)
       )
     );
 
