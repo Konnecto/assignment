@@ -36,6 +36,7 @@ const _getSingleSegmentMetadata = async (
         {
           $addFields: {
             name: segmentItem.name,
+            _id: segmentItem._id,
           },
         },
       ])
