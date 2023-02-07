@@ -51,6 +51,11 @@ const _getSingleSegmentMetadataFromDB = async (
 
 export async function segmentList(req: Request, res: Response): Promise<void> {
   try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
+
+
     const [segmentCollection, userCollection] = await Promise.all([
       (await getDbWrapper()).getCollection('segments'),
       (await getDbWrapper()).getCollection('users'),
@@ -64,7 +69,7 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
 // I've added the big query to the bottom of the file in case you to look 
 // (I obviosly wouldn't add the comments to a produciton code).
 
-    const segmentsArray = await segmentCollection.find().limit(5).toArray();
+    const segmentsArray = await segmentCollection.find().skip(skip).limit(limit).toArray();
 
     const segmentsMetadataArray = await Promise.all(
       segmentsArray.map(
