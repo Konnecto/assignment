@@ -61,6 +61,8 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
       (await getDbWrapper()).getCollection('users'),
     ]);
 
+    const totalNumOfSegments = await segmentCollection.count();
+
 // I'm using a loop that queries the DB every single time for a different segment 
 // instead of using one big query that does both operations.
 // The reason for that is in the performance results - I tested both options,
@@ -68,7 +70,6 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
 //
 // I've added the big query to the bottom of the file in case you to look 
 // (I obviosly wouldn't add the comments to a produciton code).
-
     const segmentsArray = await segmentCollection.find().skip(skip).limit(limit).toArray();
 
     const segmentsMetadataArray = await Promise.all(
@@ -81,7 +82,7 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
     res.json({
       success: true,
       data: segmentsMetadataArray,
-      totalCount: segmentsMetadataArray.length,
+      totalCount: totalNumOfSegments,
     });
   } catch (error) {
     handleResponseError(
