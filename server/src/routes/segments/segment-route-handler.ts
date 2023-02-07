@@ -51,6 +51,8 @@ const _getSingleSegmentMetadataFromDB = async (
 
 export async function segmentList(req: Request, res: Response): Promise<void> {
   try {
+    // TODO ANALYTIC - "segment list request received".
+
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 5;
     const skip = (page - 1) * limit;
@@ -84,12 +86,16 @@ export async function segmentList(req: Request, res: Response): Promise<void> {
       data: segmentsMetadataArray,
       totalCount: totalNumOfSegments,
     });
+
+    // TODO ANALYTIC - "segment list response was sent back to the client".
   } catch (error) {
     handleResponseError(
       `Get Segment List Error: ${error.message}`,
       error.message,
       res
     );
+
+    // TODO ANALYTIC - "segment list failure - error message was sent back to the client".
   }
 }
 
@@ -175,6 +181,8 @@ export async function getSegmentGenderData(
   res: Response
 ): Promise<void> {
   try {
+    // TODO ANALYTIC - "segment gender data request has been received".
+
     const segmentId = req.params.id;
 
     const userCollection: Collection = await (
@@ -187,12 +195,17 @@ export async function getSegmentGenderData(
     );
 
     res.json({ success: true, data: groupSegmentGenderDataArray });
+    
+    // TODO ANALYTIC - "segment gender data response was sent back to the client".
+
   } catch (error) {
     handleResponseError(
       `Segment gender data error: ${error.message}`,
       error.message,
       res
     );
+
+    // TODO ANALYTIC - "segment gender data failure - error message was sent back to the client".
   }
 }
 
